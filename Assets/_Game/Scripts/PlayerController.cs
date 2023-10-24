@@ -9,27 +9,18 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Renderer myRenderer;
     [SerializeField] GameObject PickupPraf;
     [SerializeField] GameObject Player;
+    [SerializeField] GameObject CompletePanel, GameOverPanel;
 
     //[SerializeField] List<GameObject> AllCollectedObject;
     [SerializeField] bool isRunning;
 
     [SerializeField] List<Color> AllColors;
-    [SerializeField] GameObject ColorChanger;
 
     [SerializeField] List<GameObject> CollectedObject;
     //float lerpSpeed = 9;
 
     float counter = 0.7f;
 
-    void Start()
-    {
-        int randomIndex;
-
-        Debug.Log("Last obj called");
-        Debug.Log("Last obj Completee");
-        randomIndex = Random.Range(0, AllColors.Count);
-        ColorChanger.gameObject.GetComponent<MeshRenderer>().material.color = AllColors[randomIndex];
-    }
 
     private void Update()
     {
@@ -52,6 +43,7 @@ public class PlayerController : MonoBehaviour
             Vector3 spawnPosition = transform.position + Vector3.up * counter;
             GameObject g = Instantiate(PickupPraf, spawnPosition, Quaternion.identity, this.transform);
             CollectedObject.Add(g);
+            g.gameObject.GetComponent<MeshRenderer>().material.color = Player.GetComponent<MeshRenderer>().material.color;
             counter += 0.4f;
 
             Destroy(other.gameObject);
@@ -68,13 +60,18 @@ public class PlayerController : MonoBehaviour
                 Destroy(lastObj);
                 Destroy(other.gameObject);
                 Debug.Log("IF   Completeee");
+                counter = CollectedObject.Count * 0.4f;
             }
             else
             {
                 Debug.Log("Game Overrr");
+                GameOverPanel.SetActive(true);
             }
         }
-        
+        if(other.gameObject.tag == "Complete")
+        {
+            CompletePanel.SetActive(true);
+        }
         
     }
     private void OnTriggerEnter(Collider other)
