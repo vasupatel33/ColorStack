@@ -20,7 +20,10 @@ public class PlayerController : MonoBehaviour
     //float lerpSpeed = 9;
 
     float counter = 0.7f;
-
+    private void Start()
+    {
+        
+    }
 
     private void Update()
     {
@@ -72,7 +75,10 @@ public class PlayerController : MonoBehaviour
         {
             CompletePanel.SetActive(true);
         }
-        
+        if(other.gameObject.tag == "Over")
+        {
+            GameOverPanel.SetActive(true);
+        }
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -98,4 +104,5 @@ public class PlayerController : MonoBehaviour
     //    myColor = inColor;
     //    myRenderer.material.SetColor("_Color", myColor);
     //}
+
 }
