@@ -106,6 +106,14 @@ public class PlayerController : MonoBehaviour
             Debug.Log("Color channge Complete ");
         }
     }
+    public void RetryBtnGameOverPanel()
+    {
+        SceneManager.LoadScene(1);
+    }
+    public void ExitBtnGameOverPanel()
+    {
+        SceneManager.LoadScene(0);
+    }
     //IEnumerator TriggerOnOff()
     //{
     //    yield return new WaitForSeconds(0.3f);
@@ -116,5 +124,4 @@ public class PlayerController : MonoBehaviour
     //    myColor = inColor;
     //    myRenderer.material.SetColor("_Color", myColor);
     //}
-
 }
