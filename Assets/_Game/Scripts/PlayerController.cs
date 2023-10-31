@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [System.Serializable]
 public class PlayerController : MonoBehaviour
@@ -15,8 +16,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] List<Color> AllColors;
 
     [SerializeField] List<GameObject> CollectedObject;
-    //float lerpSpeed = 9;
-
+  
     float counter = 0.7f;
     private void Start()
     {
@@ -32,6 +32,7 @@ public class PlayerController : MonoBehaviour
     }
     //*******************    TRIGGER VARIABLES    *********************
     //bool isOn;
+    bool levelflag;
     private void OnCollisionEnter(Collision other)
     {
         //Debug.Log("Collison Detectt");
@@ -71,12 +72,25 @@ public class PlayerController : MonoBehaviour
         }
         if(other.gameObject.tag == "Complete")
         {
-            CompletePanel.SetActive(true);
+            if(!levelflag)
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+                levelflag = true;
+            }
+            else
+            {
+                CompletePanel.SetActive(true);
+                levelflag = false;
+            }
         }
         if(other.gameObject.tag == "Over")
         {
             GameOverPanel.SetActive(true);
         }
+    }
+    public void CompleteButtonClicked()
+    {
+        SceneManager.LoadScene(1);
     }
     private void OnTriggerEnter(Collider other)
     {
