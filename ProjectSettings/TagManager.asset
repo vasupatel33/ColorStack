@@ -9,6 +9,9 @@ TagManager:
   - ColorChange
   - Over
   - Complete
+  - LastObj
+  - SameColour
+  - Complete2
   layers:
   - Default
   - TransparentFX

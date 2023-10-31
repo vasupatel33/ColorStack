@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] GameObject PickupPraf;
     [SerializeField] GameObject Player;
-    [SerializeField] GameObject CompletePanel, GameOverPanel;
+    [SerializeField] GameObject CompletePanel, GameOverPanel, PausePanel;
 
     //[SerializeField] List<GameObject> AllCollectedObject;
     [SerializeField] bool isRunning;
@@ -72,16 +72,14 @@ public class PlayerController : MonoBehaviour
         }
         if(other.gameObject.tag == "Complete")
         {
-            if(!levelflag)
+            if (!levelflag)
             {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-                levelflag = true;
+                SceneManager.LoadScene(2);
             }
-            else
-            {
-                CompletePanel.SetActive(true);
-                levelflag = false;
-            }
+        }
+        if(other.gameObject.tag == "Complete2")
+        {
+            CompletePanel.SetActive(true);
         }
         if(other.gameObject.tag == "Over")
         {
@@ -113,6 +111,26 @@ public class PlayerController : MonoBehaviour
     public void ExitBtnGameOverPanel()
     {
         SceneManager.LoadScene(0);
+    }
+    public void PauseBtnClicked()
+    {
+        PausePanel.SetActive(true);
+        Time.timeScale = 0;
+    }
+    public void PausePanelClose()
+    {
+        PausePanel.SetActive(false);
+        Time.timeScale = 1;
+    }
+    public void RetryBtnPausePanel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        Time.timeScale = 1;
+    }
+    public void ExitBtnPausePanel()
+    {
+        SceneManager.LoadScene(0);
+        Time.timeScale = 1;
     }
     //IEnumerator TriggerOnOff()
     //{
