@@ -15,6 +15,18 @@ public class MenuManager : MonoBehaviour
     {
         SceneManager.LoadScene(1);
     }
+    public void BackBtnSettingPanel()
+    {
+        SettingPanel.SetActive(false);
+    }
+    public void SettingPanelOpen()
+    {
+        SettingPanel.SetActive(true);
+    }
+    public void StartBtn()
+    {
+        SceneManager.LoadScene(1);
+    }
     public void MusicManagement()
     {
         if (Common.instance.musicPlaying == true)
