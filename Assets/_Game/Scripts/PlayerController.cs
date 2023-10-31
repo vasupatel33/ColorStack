@@ -5,8 +5,6 @@ using UnityEngine;
 [System.Serializable]
 public class PlayerController : MonoBehaviour
 {
-    //[SerializeField] Color myColor;
-    [SerializeField] Renderer myRenderer;
     [SerializeField] GameObject PickupPraf;
     [SerializeField] GameObject Player;
     [SerializeField] GameObject CompletePanel, GameOverPanel;
