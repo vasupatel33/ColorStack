@@ -9,23 +9,40 @@ public class MenuManager : MonoBehaviour
     [SerializeField] GameObject SettingPanel;
     [SerializeField] Button MusicBtn, SoundBtn;
     [SerializeField] Sprite OffSprite, OnSprite;
+    [SerializeField] Animator SettingPanelAnim;
 
-    [SerializeField] AudioClip MusicClip;
-    public void LoadGame()
-    {
-        SceneManager.LoadScene(1);
-    }
+    [SerializeField] AudioClip MusicClip, ClickSound;
+    //public void LoadGame()
+    //{
+    //    Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(ClickSound);
+    //    SceneManager.LoadScene(1);
+    //}
     public void BackBtnSettingPanel()
     {
+        Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(ClickSound);
+        SettingPanelAnim.Play("SettinPanelClose");
+        Invoke("WaitForClose", 1);
+    }
+    private void WaitForClose()
+    {
+        Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(ClickSound);
         SettingPanel.SetActive(false);
     }
+
     public void SettingPanelOpen()
     {
+        Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(ClickSound);
         SettingPanel.SetActive(true);
+        SettingPanelAnim.Play("SettinPanel");
     }
     public void StartBtn()
     {
+        Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(ClickSound);
         SceneManager.LoadScene(1);
+    }
+    public void QuitBtn()
+    {
+        Application.Quit();
     }
     public void MusicManagement()
     {

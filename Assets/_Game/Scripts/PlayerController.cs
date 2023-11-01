@@ -16,7 +16,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] List<Color> AllColors;
 
     [SerializeField] List<GameObject> CollectedObject;
-  
+    [SerializeField] AudioClip PickupSound, ClickSound, GameOverSound, EnemyPickupSound, CompleteSound;
+
     float counter = 0.7f;
     private void Start()
     {
@@ -25,20 +26,23 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        Debug.Log("Current time = " + Time.timeScale);
         float Hinput = Input.GetAxis("Horizontal");
-        //float Vinput = Input.GetAxis("Vertical");
-
         Player.transform.position += new Vector3(Hinput * Time.deltaTime * 6, 0, Time.deltaTime * 6);
+        if(transform.position.y < -3)
+        {
+            Time.timeScale = 0;
+            GameOverPanel.SetActive(true);
+            transform.position = new Vector3(0, 0, 0);
+        }
     }
     //*******************    TRIGGER VARIABLES    *********************
-    //bool isOn;
     bool levelflag;
     private void OnCollisionEnter(Collision other)
     {
-        //Debug.Log("Collison Detectt");
         if (other.gameObject.tag == "Pickup")
         {
-            Debug.Log("1");
+            Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(PickupSound);
 
             //GameObject g = Instantiate(PickupPraf, this.transform);
             //g.transform.position += new Vector3(0, counter, 0);
@@ -47,7 +51,6 @@ public class PlayerController : MonoBehaviour
             CollectedObject.Add(g);
             g.gameObject.GetComponent<MeshRenderer>().material.color = Player.GetComponent<MeshRenderer>().material.color;
             counter += 0.4f;
-
             Destroy(other.gameObject);
         }
         if(other.gameObject.tag == "enemy")
@@ -55,6 +58,7 @@ public class PlayerController : MonoBehaviour
             if(CollectedObject.Count > 0)
             {
                 Debug.Log("IF callled");
+                Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(EnemyPickupSound);
                 GameObject lastObj = CollectedObject[CollectedObject.Count - 1];
 
                 CollectedObject.RemoveAt(CollectedObject.Count - 1);
@@ -66,6 +70,10 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
+                //transform.gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePositionY;
+                Time.timeScale = 0;
+                Debug.Log("Time is = "+Time.timeScale);
+                Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(GameOverSound);
                 Debug.Log("Game Overrr");
                 GameOverPanel.SetActive(true);
             }
@@ -74,20 +82,25 @@ public class PlayerController : MonoBehaviour
         {
             if (!levelflag)
             {
+                Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(CompleteSound);
                 SceneManager.LoadScene(2);
             }
         }
         if(other.gameObject.tag == "Complete2")
         {
+            Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(CompleteSound);
             CompletePanel.SetActive(true);
         }
         if(other.gameObject.tag == "Over")
         {
+            Time.timeScale = 0;
+            Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(GameOverSound);
             GameOverPanel.SetActive(true);
         }
     }
     public void CompleteButtonClicked()
     {
+        Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(ClickSound);
         SceneManager.LoadScene(1);
     }
     private void OnTriggerEnter(Collider other)
@@ -95,6 +108,7 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.tag == "ColorChange")
         {
             Debug.Log("Color channge called");
+            Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(PickupSound);
             Player.GetComponent<MeshRenderer>().material.color = other.gameObject.GetComponent<MeshRenderer>().material.color;
             //myRenderer.material.color = other.gameObject.GetComponent<MeshRenderer>().material.color;
             for (int i = 0; i < CollectedObject.Count; i++)
@@ -106,31 +120,40 @@ public class PlayerController : MonoBehaviour
     }
     public void RetryBtnGameOverPanel()
     {
-        SceneManager.LoadScene(1);
+        Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(ClickSound);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        Time.timeScale = 1;
+        Debug.Log("Time = "+Time.timeScale);
     }
     public void ExitBtnGameOverPanel()
     {
+        Time.timeScale = 1;
+        Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(ClickSound);
         SceneManager.LoadScene(0);
     }
     public void PauseBtnClicked()
     {
-        PausePanel.SetActive(true);
         Time.timeScale = 0;
+        Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(ClickSound);
+        PausePanel.SetActive(true);
     }
     public void PausePanelClose()
     {
-        PausePanel.SetActive(false);
         Time.timeScale = 1;
+        Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(ClickSound);
+        PausePanel.SetActive(false);
     }
     public void RetryBtnPausePanel()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         Time.timeScale = 1;
+        Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(ClickSound);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
     public void ExitBtnPausePanel()
     {
-        SceneManager.LoadScene(0);
         Time.timeScale = 1;
+        Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(ClickSound);
+        SceneManager.LoadScene(0);
     }
     //IEnumerator TriggerOnOff()
     //{
