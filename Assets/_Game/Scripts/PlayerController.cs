@@ -42,7 +42,7 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.tag == "Pickup")
         {
-            Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(PickupSound);
+           // Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(PickupSound);
 
             //GameObject g = Instantiate(PickupPraf, this.transform);
             //g.transform.position += new Vector3(0, counter, 0);
