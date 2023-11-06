@@ -12121,6 +12121,8 @@ MonoBehaviour:
   GameOverSound: {fileID: 8300000, guid: 929fdc087794de041aae7746d04931d5, type: 3}
   EnemyPickupSound: {fileID: 8300000, guid: db484e30a00d99e47815945cff6ae76b, type: 3}
   CompleteSound: {fileID: 8300000, guid: c2d2bcaf2bba12b4298bf9e9dfd90842, type: 3}
+  moveSpeed: 600
+  swipeSpeed: 600
 --- !u!33 &1403914983037442855
 MeshFilter:
   m_ObjectHideFlags: 0

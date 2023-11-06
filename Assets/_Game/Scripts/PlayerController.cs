@@ -19,6 +19,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] AudioClip PickupSound, ClickSound, GameOverSound, EnemyPickupSound, CompleteSound;
 
     float counter = 0.7f;
+
+
+
+    //[SerializeField] float moveSpeed = 6.0f;
+    //[SerializeField] float swipeSpeed = 6.0f;
+    //private Vector3 touchStart;
+    //private Vector3 touchEnd;
     private void Start()
     {
         
@@ -35,7 +42,55 @@ public class PlayerController : MonoBehaviour
             GameOverPanel.SetActive(true);
             transform.position = new Vector3(0, 0, 0);
         }
+
+        //if (Input.touchCount > 0)
+        //{
+        //    Debug.Log("Touch begin");
+        //    Touch touch = Input.GetTouch(0);
+
+        //    if (touch.phase == TouchPhase.Began)
+        //    {
+        //        touchStart = touch.position;
+        //    }
+        //    else if (touch.phase == TouchPhase.Moved)
+        //    {
+        //        touchEnd = touch.position;
+
+        //        // Calculate the swipe distance
+        //        Vector2 swipeVector = touchEnd - touchStart;
+
+        //        // Check if it's a left swipe
+        //        if (swipeVector.x < 0)
+        //        {
+        //            // Move the player left
+        //            PlayerMove(-swipeSpeed * Time.deltaTime, 0);
+        //            Debug.Log("Leftt");
+        //        }
+        //        // Check if it's a right swipe
+        //        else if (swipeVector.x > 0)
+        //        {
+        //            // Move the player right
+        //            PlayerMove(swipeSpeed * Time.deltaTime, 0);
+        //            Debug.Log("Rightt");
+        //        }
+
+        //        touchStart = touch.position;
+        //    }
+        //}
+        //else
+        //{
+        //    Debug.Log("not workgin touch");
+        //}
+        //// Handle arrow key input
+        //PlayerMove(Hinput * moveSpeed * Time.deltaTime, 0);
     }
+    //private void PlayerMove(float horizontalMovement, float verticalMovement)
+    //{
+    //    // Move the player
+    //    Vector3 movement = new Vector3(horizontalMovement, verticalMovement, 0);
+    //    transform.Translate(movement);
+    //}
+
     //*******************    TRIGGER VARIABLES    *********************
     bool levelflag;
     private void OnCollisionEnter(Collision other)
@@ -57,7 +112,7 @@ public class PlayerController : MonoBehaviour
         {
             if(CollectedObject.Count > 0)
             {
-                Debug.Log("IF callled");
+                
                 Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(EnemyPickupSound);
                 GameObject lastObj = CollectedObject[CollectedObject.Count - 1];
 
@@ -65,7 +120,6 @@ public class PlayerController : MonoBehaviour
 
                 Destroy(lastObj);
                 Destroy(other.gameObject);
-                Debug.Log("IF   Completeee");
                 counter = CollectedObject.Count * 0.4f;
             }
             else
