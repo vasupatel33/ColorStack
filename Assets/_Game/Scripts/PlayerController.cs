@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
 [System.Serializable]
@@ -17,84 +19,72 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] List<GameObject> CollectedObject;
     [SerializeField] AudioClip PickupSound, ClickSound, GameOverSound, EnemyPickupSound, CompleteSound;
+    private Rigidbody rb;
 
     float counter = 0.7f;
+    private Vector3 targetPosition;
+    public float initialSpeed = 0.05f;
+    private float speed = 0.05f;
+    public float smoothTime = 0.1f; // Smoothing time for position interpolation
+    private Vector3 velocity = Vector3.zero; // Velocity for smoothing
 
 
-
-    //[SerializeField] float moveSpeed = 6.0f;
-    //[SerializeField] float swipeSpeed = 6.0f;
-    //private Vector3 touchStart;
-    //private Vector3 touchEnd;
     private void Start()
     {
-        
+        rb = GetComponent<Rigidbody>();
     }
-
     private void Update()
     {
         Debug.Log("Current time = " + Time.timeScale);
         float Hinput = Input.GetAxis("Horizontal");
-        Player.transform.position += new Vector3(Hinput * Time.deltaTime * 6, 0, Time.deltaTime * 6);
-        if(transform.position.y < -3)
+        if (Hinput < 0)
+        {
+            Debug.Log("Left");
+            this.transform.position = new Vector3(rb.transform.position.x - (speed + 0.00f), rb.transform.position.y, rb.transform.position.z);
+        }
+        else if (Hinput > 0)
+        {
+            Debug.Log("Right");
+            this.transform.position = new Vector3(rb.transform.position.x + (speed + 0.005f), rb.transform.position.y, rb.transform.position.z);
+        }
+
+        rb.transform.position = new Vector3(rb.transform.position.x, rb.transform.position.y, rb.transform.position.z + speed);
+        //Player.transform.position += new Vector3(Hinput * Time.deltaTime * 6, 0, speed);
+
+
+        if (isTouching)
+        {
+            // Handle left or right touch logic
+            if (isTouchingLeft)
+            {
+                Debug.Log("Left");
+                targetPosition = new Vector3(rb.transform.position.x - (speed + 0.005f), rb.transform.position.y, rb.transform.position.z);
+            }
+            else if (isTouchingRight)
+            {
+                Debug.Log("Right");
+                targetPosition = new Vector3(rb.transform.position.x + (speed + 0.005f), rb.transform.position.y, rb.transform.position.z);
+            }
+            rb.transform.position = Vector3.Lerp(rb.transform.position, targetPosition, smoothTime);
+        }
+
+        if (transform.position.y < -3)
         {
             Time.timeScale = 0;
             GameOverPanel.SetActive(true);
             transform.position = new Vector3(0, 0, 0);
         }
-
-        //if (Input.touchCount > 0)
-        //{
-        //    Debug.Log("Touch begin");
-        //    Touch touch = Input.GetTouch(0);
-
-        //    if (touch.phase == TouchPhase.Began)
-        //    {
-        //        touchStart = touch.position;
-        //    }
-        //    else if (touch.phase == TouchPhase.Moved)
-        //    {
-        //        touchEnd = touch.position;
-
-        //        // Calculate the swipe distance
-        //        Vector2 swipeVector = touchEnd - touchStart;
-
-        //        // Check if it's a left swipe
-        //        if (swipeVector.x < 0)
-        //        {
-        //            // Move the player left
-        //            PlayerMove(-swipeSpeed * Time.deltaTime, 0);
-        //            Debug.Log("Leftt");
-        //        }
-        //        // Check if it's a right swipe
-        //        else if (swipeVector.x > 0)
-        //        {
-        //            // Move the player right
-        //            PlayerMove(swipeSpeed * Time.deltaTime, 0);
-        //            Debug.Log("Rightt");
-        //        }
-
-        //        touchStart = touch.position;
-        //    }
-        //}
-        //else
-        //{
-        //    Debug.Log("not workgin touch");
-        //}
-        //// Handle arrow key input
-        //PlayerMove(Hinput * moveSpeed * Time.deltaTime, 0);
+        CheckTouchInput();
     }
-    //private void PlayerMove(float horizontalMovement, float verticalMovement)
-    //{
-    //    // Move the player
-    //    Vector3 movement = new Vector3(horizontalMovement, verticalMovement, 0);
-    //    transform.Translate(movement);
-    //}
-
     //*******************    TRIGGER VARIABLES    *********************
-    bool levelflag;
+    
     private void OnCollisionEnter(Collision other)
     {
+        if(other.gameObject.tag == "Ground")
+        {
+            transform.position = new Vector3( Mathf.Clamp(transform.position.x, -2.5f, 4.15f),transform.position.y, transform.position.z);
+            Debug.Log("Ground colided");
+        }
         if (other.gameObject.tag == "Pickup")
         {
            // Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(PickupSound);
@@ -132,20 +122,17 @@ public class PlayerController : MonoBehaviour
                 GameOverPanel.SetActive(true);
             }
         }
-        if(other.gameObject.tag == "Complete")
+        if (other.gameObject.tag == "Complete")
         {
-            if (!levelflag)
-            {
-                Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(CompleteSound);
-                SceneManager.LoadScene(2);
-            }
+            Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(CompleteSound);
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         }
         if(other.gameObject.tag == "Complete2")
         {
             Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(CompleteSound);
             CompletePanel.SetActive(true);
         }
-        if(other.gameObject.tag == "Over")
+        if (other.gameObject.tag == "Over")
         {
             Time.timeScale = 0;
             Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(GameOverSound);
@@ -219,4 +206,78 @@ public class PlayerController : MonoBehaviour
     //    myColor = inColor;
     //    myRenderer.material.SetColor("_Color", myColor);
     //}
+
+
+    private Vector2 startPos;
+    private float swipeThreshold = 50f;
+
+    private bool isTouchingLeft = false;
+    private bool isTouchingRight = false;
+
+    private bool isSwipeUp = false;
+    private bool isTouching = false;
+
+
+
+    void OnTouchBegan(Vector2 touchPosition)
+    {
+        // Determine if touch is on the left or right side
+        float screenWidth = Screen.width;
+        float screenCenter = screenWidth / 2f;
+        bool isLeftSide = touchPosition.x < screenCenter;
+
+        if (isLeftSide)
+        {
+            isTouchingLeft = true;
+            isTouchingRight = false; // Reset right side flag
+        }
+        else
+        {
+            isTouchingRight = true;
+            isTouchingLeft = false; // Reset left side flag
+        }
+    }
+
+    void OnTouchMoved(Vector2 touchPosition)
+    {
+        // Check for swipe logic
+        float deltaY = touchPosition.y - startPos.y;
+
+        if (deltaY > swipeThreshold)
+        {
+            isSwipeUp = true;
+            isTouching = false; // Disable left/right movement while swiping up
+        }
+    }
+
+    void OnTouchEnded()
+    {
+        isTouchingLeft = false;
+        isTouchingRight = false;
+        isSwipeUp = false;
+        isTouching = false;
+
+        // Reset the target position when touch ends
+        targetPosition = rb.transform.position;
+    }
+
+    void CheckTouchInput()
+    {
+        foreach (Touch touch in Input.touches)
+        {
+            switch (touch.phase)
+            {
+                case TouchPhase.Began:
+                    OnTouchBegan(touch.position);
+                    break;
+                case TouchPhase.Moved:
+                    OnTouchMoved(touch.position);
+
+                    break;
+                case TouchPhase.Ended:
+                    OnTouchEnded();
+                    break;
+            }
+        }
+    }
 }

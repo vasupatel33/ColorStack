@@ -12,6 +12,7 @@ TagManager:
   - LastObj
   - SameColour
   - Complete2
+  - Ground
   layers:
   - Default
   - TransparentFX
