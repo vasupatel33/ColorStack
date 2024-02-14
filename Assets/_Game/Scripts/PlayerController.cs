@@ -33,16 +33,15 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
     }
-    private void Update()
+    private void FixedUpdate()
     {
-        Debug.Log("Current time = " + Time.timeScale);
         float Hinput = Input.GetAxis("Horizontal");
-        if (Hinput < 0)
+        if (Hinput < 0 || isLeftBtnClick)
         {
             Debug.Log("Left");
             this.transform.position = new Vector3(rb.transform.position.x - (speed + 0.00f), rb.transform.position.y, rb.transform.position.z);
         }
-        else if (Hinput > 0)
+        else if (Hinput > 0 || isRightBtnClick)
         {
             Debug.Log("Right");
             this.transform.position = new Vector3(rb.transform.position.x + (speed + 0.005f), rb.transform.position.y, rb.transform.position.z);
@@ -51,22 +50,7 @@ public class PlayerController : MonoBehaviour
         rb.transform.position = new Vector3(rb.transform.position.x, rb.transform.position.y, rb.transform.position.z + speed);
         //Player.transform.position += new Vector3(Hinput * Time.deltaTime * 6, 0, speed);
 
-
-        if (isTouching)
-        {
-            // Handle left or right touch logic
-            if (isTouchingLeft)
-            {
-                Debug.Log("Left");
-                targetPosition = new Vector3(rb.transform.position.x - (speed + 0.005f), rb.transform.position.y, rb.transform.position.z);
-            }
-            else if (isTouchingRight)
-            {
-                Debug.Log("Right");
-                targetPosition = new Vector3(rb.transform.position.x + (speed + 0.005f), rb.transform.position.y, rb.transform.position.z);
-            }
-            rb.transform.position = Vector3.Lerp(rb.transform.position, targetPosition, smoothTime);
-        }
+        //rb.transform.position = Vector3.Lerp(rb.transform.position, targetPosition, smoothTime);
 
         if (transform.position.y < -3)
         {
@@ -74,8 +58,8 @@ public class PlayerController : MonoBehaviour
             GameOverPanel.SetActive(true);
             transform.position = new Vector3(0, 0, 0);
         }
-        CheckTouchInput();
-    }
+    }   
+    
     //*******************    TRIGGER VARIABLES    *********************
     
     private void OnCollisionEnter(Collision other)
@@ -115,11 +99,11 @@ public class PlayerController : MonoBehaviour
             else
             {
                 //transform.gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePositionY;
-                Time.timeScale = 0;
                 Debug.Log("Time is = "+Time.timeScale);
                 Common.instance.gameObject.transform.GetChild(1).GetComponent<AudioSource>().PlayOneShot(GameOverSound);
                 Debug.Log("Game Overrr");
                 GameOverPanel.SetActive(true);
+                Time.timeScale = 0;
             }
         }
         if (other.gameObject.tag == "Complete")
@@ -207,6 +191,19 @@ public class PlayerController : MonoBehaviour
     //    myRenderer.material.SetColor("_Color", myColor);
     //}
 
+    bool isLeftBtnClick, isRightBtnClick;
+    public void LeftBtnClicked()
+    {
+        Debug.Log("Clicked");
+        isLeftBtnClick =! isLeftBtnClick;
+    }
+    public void RightBtnClicked()
+    {
+        Debug.Log("Right");
+        isRightBtnClick =! isRightBtnClick;
+    }
+
+    
 
     private Vector2 startPos;
     private float swipeThreshold = 50f;
